@@ -1,11 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Buckets API', type: :request do
-  let!(:buckets) { create_list(:bucket, 10) }
+  let(:user) { create(:user) }
+  let!(:buckets) { create_list(:bucket, 10, user_id: user.id) }
   let(:bucket_id) { buckets.first.id }
+  let(:headers) { valid_headers }
 
   describe 'Get /buckets' do
-    before { get '/buckets' }
+    before { get '/buckets', params: {}, headers: headers }
 
     it 'returns buckets' do
       expect(json).not_to be_empty
@@ -18,7 +20,7 @@ RSpec.describe 'Buckets API', type: :request do
   end
 
   describe 'Get /buckets/:id' do
-    before { get "/buckets/#{bucket_id}" }
+    before { get "/buckets/#{bucket_id}", params: {}, headers: headers }
 
     context 'when the bucket exists' do
       it 'returns the bucket' do
@@ -45,10 +47,12 @@ RSpec.describe 'Buckets API', type: :request do
   end
 
   describe 'POST /buckets' do
-    let(:valid_attributes) { { title: 'Coding things', description: 'The things I want to code' } }
+    let(:valid_attributes) do
+      { title: 'Coding things', description: 'The things I want to code', user_id: user.id.to_s }.to_json
+    end
 
     context 'when request params are valid' do
-      before { post '/buckets', params: valid_attributes }
+      before { post '/buckets', params: valid_attributes, headers: headers }
 
       it 'creates a bucket' do
         expect(json['title']).to eq('Coding things')
@@ -61,23 +65,23 @@ RSpec.describe 'Buckets API', type: :request do
     end
 
     context 'when request params are invalid' do
-      before { post '/buckets', params: { title: '¿no descripción?' } }
+      before { post '/buckets', params: { title: nil }.to_json, headers: headers }
 
       it '422s' do
         expect(response).to have_http_status(422)
       end
 
       it 'returns validation failure message: description cant be blank' do
-        expect(response.body).to match(/Validation failed: Description can't be blank/)
+        expect(response.body).to match(/Validation failed: Title can't be blank, Description can't be blank/)
       end
     end
   end
 
   describe 'PUT /buckets/:id' do
-    let(:valid_attributes) { { title: 'Things I want to code' } }
+    let(:valid_attributes) { { title: 'Things I want to code' }.to_json }
 
     context 'when the bucket exists' do
-      before { put "/buckets/#{bucket_id}", params: valid_attributes }
+      before { put "/buckets/#{bucket_id}", params: valid_attributes, headers: headers }
 
       it 'updates the bucket title' do
         expect(response.body).to be_empty
@@ -90,7 +94,7 @@ RSpec.describe 'Buckets API', type: :request do
   end
 
   describe 'DELETE /buckets/:id' do
-    before { delete "/buckets/#{bucket_id}" }
+    before { delete "/buckets/#{bucket_id}", params: {}, headers: headers }
 
     it '204s' do
       expect(response).to have_http_status(204)

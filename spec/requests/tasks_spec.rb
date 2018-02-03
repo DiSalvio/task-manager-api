@@ -1,13 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe 'Tasks API' do
-  let!(:bucket) { create(:bucket) }
+  let(:user) { create(:user) }
+  let!(:bucket) { create(:bucket, user_id: user.id) }
   let!(:tasks) { create_list(:task, 20, bucket_id: bucket.id) }
   let(:bucket_id) { bucket.id }
   let(:id) { tasks.first.id }
+  let(:headers) { valid_headers }
 
   describe 'GET /buckets/:id/tasks' do
-    before { get "/buckets/#{bucket_id}/tasks" }
+    before { get "/buckets/#{bucket_id}/tasks", params: {}, headers: headers }
 
     context 'when bucket exists' do
       it '200s' do
@@ -33,7 +35,7 @@ RSpec.describe 'Tasks API' do
   end
 
   describe 'GET /bucket/:id/tasks/:id' do
-    before { get "/buckets/#{bucket_id}/tasks/#{id}" }
+    before { get "/buckets/#{bucket_id}/tasks/#{id}", params: {}, headers: headers }
 
     context 'when task exists' do
       it '200s' do
@@ -59,10 +61,16 @@ RSpec.describe 'Tasks API' do
   end
 
   describe 'POST /bucket/:bucket_id/tasks' do
-    let(:valid_attributes) { { title: 'Write the tests for this', status: 'Scheduled', description: 'request specs for the tasks' } }
+    let(:valid_attributes) do
+      {
+        title: 'Write the tests for this',
+        status: 'Scheduled',
+        description: 'request specs for the tasks'
+      }.to_json
+    end
 
     context 'when task attributes are valid' do
-      before { post "/buckets/#{bucket_id}/tasks", params: valid_attributes }
+      before { post "/buckets/#{bucket_id}/tasks", params: valid_attributes, headers: headers }
 
       it '201s' do
         expect(response).to have_http_status(201)
@@ -70,7 +78,7 @@ RSpec.describe 'Tasks API' do
     end
 
     context 'when task attributes are invalid' do
-      before { post "/buckets/#{bucket_id}/tasks", params: {} }
+      before { post "/buckets/#{bucket_id}/tasks", params: {}, headers: headers }
 
       it '422s' do
         expect(response).to have_http_status(422)
@@ -83,9 +91,9 @@ RSpec.describe 'Tasks API' do
   end
 
   describe 'PUT /buckets/:bucket_id/tasks/:id' do
-    let(:valid_attributes) { { title: 'Write tests nowww!!' } }
+    let(:valid_attributes) { { title: 'Write tests nowww!!' }.to_json }
 
-    before { put "/buckets/#{bucket_id}/tasks/#{id}", params: valid_attributes }
+    before { put "/buckets/#{bucket_id}/tasks/#{id}", params: valid_attributes, headers: headers }
 
     context 'when task exists' do
       it '204s' do
@@ -112,7 +120,7 @@ RSpec.describe 'Tasks API' do
   end
 
   describe "DELETE /buckets/:bucket_id/tasks/:id" do
-    before { delete "/buckets/#{bucket_id}/tasks/#{id}" }
+    before { delete "/buckets/#{bucket_id}/tasks/#{id}", params: {}, headers: headers }
 
     it '204s' do
       expect(response).to have_http_status(204)

@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20180129000017) do
     t.text "description"
     t.datetime "started_on"
     t.datetime "complete_by"
+    t.string "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -34,6 +35,14 @@ ActiveRecord::Schema.define(version: 20180129000017) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bucket_id"], name: "index_tasks_on_bucket_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "tasks", "buckets"

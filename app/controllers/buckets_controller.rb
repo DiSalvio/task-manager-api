@@ -2,12 +2,12 @@ class BucketsController < ApplicationController
   before_action :set_bucket, only: [:show, :update, :destroy]
 
   def index
-    @buckets = Bucket.all
+    @buckets = current_user.buckets
     json_response(@buckets)
   end
 
   def create
-    @bucket = Bucket.create!(bucket_params)
+    @bucket = current_user.buckets.create!(bucket_params)
     json_response(@bucket, :created)
   end
 
