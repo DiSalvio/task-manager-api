@@ -3,7 +3,7 @@ module V1
     before_action :set_bucket, only: [:show, :update, :destroy]
 
     def index
-      @buckets = current_user.buckets
+      @buckets = current_user.buckets.paginate(page: params[:page], per_page: 10)
       json_response(@buckets)
     end
 

@@ -22,7 +22,7 @@ gem 'webpacker'
 gem 'bcrypt', '~> 3.1.7'
 gem 'jwt'
 gem 'active_model_serializers', '~> 0.10.0'
-
+gem 'will_paginate', '~> 3.1.0'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
@@ -31,13 +31,13 @@ gem 'active_model_serializers', '~> 0.10.0'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.5'
+  gem 'faker'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
 group :test do
   gem 'factory_bot_rails', '~> 4.0'
   gem 'shoulda-matchers', '~> 3.1'
-  gem 'faker'
   gem 'database_cleaner'
 end
 
