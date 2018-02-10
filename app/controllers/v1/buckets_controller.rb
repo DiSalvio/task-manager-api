@@ -30,7 +30,7 @@ module V1
 
     def bucket_params
       # whitelist params
-      params.permit(:title, :description, :started_on, :complete_by)
+      params.permit(:title, :description, :started_on, :complete_by, :created_at, :updated_at)
     end
 
     def set_bucket
