@@ -12,8 +12,8 @@ module V1
     end
 
     def create
-      @bucket.tasks.create!(task_params)
-      json_response(@bucket, :created)
+      @task = @bucket.tasks.create!(task_params)
+      json_response(@task, :created)
     end
 
     def update
